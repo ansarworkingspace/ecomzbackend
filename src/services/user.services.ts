@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import User from "../models/User.model";
 import { ServiceResult } from "../types/api.types";
-import { generateToken } from "../utils/jwt.utils";
+import { clearTokenCookie, generateToken } from "../utils/jwt.utils";
 
 interface LoginData {
   email: string;
@@ -159,6 +159,28 @@ export const loginUserService = async (
       error: {
         code: "INTERNAL_ERROR",
         message: "Internal server error occurred while logging in user",
+        statusCode: 500,
+      },
+    };
+  }
+};
+
+export const logoutService = async (res: any): Promise<ServiceResult> => {
+  try {
+    // ✅ Correct usage: pass `res` only
+    clearTokenCookie(res);
+
+    return {
+      success: true,
+      data: "User logged out successfully",
+    };
+  } catch (error: any) {
+    console.error("Error in logoutService:", error);
+    return {
+      success: false,
+      error: {
+        code: "LOGOUT_ERROR",
+        message: "Failed to logout user",
         statusCode: 500,
       },
     };

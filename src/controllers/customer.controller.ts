@@ -7,7 +7,6 @@ import {
   addOrderService,
   viewCustomerOrderService,
   listCustomerOrdersService,
-  logoutService,
 } from "../services/customer.services";
 
 // List Products
@@ -282,53 +281,5 @@ export const viewCustomerOrderController = async (
     };
 
     res.status(500).json(response);
-  }
-};
-
-export const logoutController = async (req: any, res: Response) => {
-  try {
-    const userId = req.user?.userId;
-    const token = req.token;
-
-    if (!userId || !token) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          code: "UNAUTHORIZED",
-          message: "User not authenticated",
-          statusCode: 401,
-        },
-      });
-    }
-
-    const result = await logoutService(userId, token, res);
-
-    if (!result.success) {
-      const response: ApiResponse = {
-        success: false,
-        message: result.error?.message || "Failed to fetch order details",
-        timestamp: new Date().toISOString(),
-      };
-
-      res.status(result.error?.statusCode || 400).json(response);
-      return;
-    }
-
-    if (result.success) {
-      return res.status(200).json({
-        success: true,
-        message: "Logged out successfully",
-      });
-    }
-  } catch (error) {
-    console.error("Error in logoutController:", error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: "INTERNAL_ERROR",
-        message: "Internal server error occurred during logout",
-        statusCode: 500,
-      },
-    });
   }
 };

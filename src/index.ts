@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes";
 import dashboardRoutes from "./routes/dashboard-routes/dashboard.routers";
 import customerRoutes from "./routes/customer-routes/customer.routes";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 const app = express();
@@ -20,6 +21,7 @@ app.use(
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Connect to MongoDB
 connectDB();

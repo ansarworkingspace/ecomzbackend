@@ -1,6 +1,7 @@
 import express from "express";
 import {
   loginUserController,
+  logoutController,
   registerUserController,
 } from "../controllers/user.controller";
 import {
@@ -8,6 +9,7 @@ import {
   loginValidator,
   registerValidation,
 } from "../validator/user.validator";
+import { authenticateToken } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
@@ -26,5 +28,7 @@ router.post(
   handleValidationErrors,
   loginUserController
 );
+
+router.post("/logout", authenticateToken, logoutController);
 
 export default router;

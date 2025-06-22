@@ -20,16 +20,9 @@ export const authenticateToken = (
   let token = req.cookies?.authToken;
 
   if (!token) {
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.substring(7);
-    }
-  }
-
-  if (!token) {
     res.status(401).json({
       success: false,
-      message: "Access token is missing or invalid",
+      message: "Authentication token missing from cookies",
     });
     return;
   }
