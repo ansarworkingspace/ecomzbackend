@@ -1,80 +1,33 @@
 import bcrypt from "bcrypt";
-import User, { IUser } from "../models/User.model";
+import User from "../models/User.model";
+import { ServiceResult } from "../types/api.types";
 
-interface ServiceResponse {
-  statusCode?: number;
-  message?: string;
-  success?: boolean;
-  _id?: string;
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-  image?: string;
-  role?: string;
-  addresses?: any[];
-  isActive?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-//CUSTOMER REGISTER SERVICE
 export const registerUserService = async (
   userData: any
-): Promise<ServiceResponse> => {
+): Promise<ServiceResult> => {
   try {
     const { password, email, firstName, lastName, phone, image, role } =
       userData;
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email: email?.toLowerCase() });
+    const existingUser = await User.findOne({
+      email: email?.toLowerCase(),
+    }).select("_id email");
+
     if (existingUser) {
       return {
-        statusCode: 409,
-        message: "Email is already registered",
         success: false,
+        error: {
+          code: "USER_EXISTS",
+          message: "Email is already registered",
+          statusCode: 409,
+        },
       };
     }
 
-    // Validate required fields
-    if (!firstName || !lastName || !email || !password) {
-      return {
-        statusCode: 400,
-        message: "firstName, lastName, email, and password are required",
-        success: false,
-      };
-    }
-
-    // Validate password
-    if (password.length < 6) {
-      return {
-        statusCode: 400,
-        message: "Password must be at least 6 characters long",
-        success: false,
-      };
-    }
-
-    // Validate email format
-    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    if (!emailRegex.test(email)) {
-      return {
-        statusCode: 400,
-        message: "Please enter a valid email address",
-        success: false,
-      };
-    }
-
-    // Validate phone if provided
-    if (phone && !/^\d{10}$/.test(phone)) {
-      return {
-        statusCode: 400,
-        message: "Please enter a valid 10-digit phone number",
-        success: false,
-      };
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    // Hash password with higher salt rounds for production
+    const saltRounds = process.env.NODE_ENV === "production" ? 12 : 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Create new user
     const user = new User({
@@ -89,11 +42,11 @@ export const registerUserService = async (
       isActive: true,
     });
 
-    const savedUser: any = await user.save();
+    const savedUser = await user.save();
 
-    // Return success response with user data
-    return {
-      _id: savedUser._id.toString(),
+    // Remove sensitive data
+    const userResponse = {
+      _id: savedUser._id,
       firstName: savedUser.firstName,
       lastName: savedUser.lastName,
       email: savedUser.email,
@@ -105,14 +58,21 @@ export const registerUserService = async (
       createdAt: savedUser.createdAt,
       updatedAt: savedUser.updatedAt,
     };
+
+    return {
+      success: true,
+      data: userResponse,
+    };
   } catch (error: any) {
     console.error("Error in registerUserService:", error);
 
-    // Return internal server error response
     return {
-      statusCode: 500,
-      message: "Internal server error occurred while registering user",
       success: false,
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Internal server error occurred while registering user",
+        statusCode: 500,
+      },
     };
   }
 };
