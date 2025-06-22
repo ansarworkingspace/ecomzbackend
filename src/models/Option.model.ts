@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IOption extends Document {
   optionName: string;
@@ -12,9 +12,9 @@ const OptionSchema = new Schema<IOption>(
   {
     optionName: { type: String, required: true },
     values: { type: [String], required: true },
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
 
-export default mongoose.model<IOption>('Option', OptionSchema);
+export default mongoose.model<IOption>("Option", OptionSchema);
