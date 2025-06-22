@@ -1,20 +1,17 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 
-dotenv.config();
-
-const MONGODB_URI = process.env.MONGODB_URI as string;
-
-if (!MONGODB_URI) {
-  throw new Error("MONGODB_URI is not defined in .env file");
-}
-
-const connectDB = async () => {
+const connectDB = async (): Promise<void> => {
   try {
-    await mongoose.connect(MONGODB_URI);
-    console.log("✅ MongoDB connected successfully");
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
+    const mongoURI =
+      process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce";
+
+    console.log("Connecting to MongoDB...");
+
+    const conn = await mongoose.connect(mongoURI);
+
+    console.log(`✅ MongoDB Connected: done`);
+  } catch (error: any) {
+    console.error("❌ MongoDB connection error:", error.message);
     process.exit(1);
   }
 };

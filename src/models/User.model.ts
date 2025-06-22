@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types } from 'mongoose';
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 interface IAddress {
   _id: Types.ObjectId;
@@ -39,7 +39,7 @@ const AddressSchema = new Schema<IAddress>(
     state: String,
     pincode: String,
     country: String,
-    isDefault: Boolean
+    isDefault: Boolean,
   },
   { _id: false }
 );
@@ -52,11 +52,11 @@ const UserSchema = new Schema<IUser>(
     image: String,
     password: String,
     phone: String,
-    role: { type: String, enum: ['admin', 'customer'], default: 'customer' },
+    role: { type: String, enum: ["admin", "customer"], default: "customer" },
     addresses: [AddressSchema],
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
 
-export default mongoose.model<IUser>('User', UserSchema);
+export default mongoose.model<IUser>("User", UserSchema);
