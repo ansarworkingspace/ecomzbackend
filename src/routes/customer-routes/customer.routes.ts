@@ -16,6 +16,8 @@ import {
   viewProductController,
 } from "../../controllers/customer.controller";
 import { authenticateToken } from "../../middleware/auth.middleware";
+import { listCategoryValidator } from "../../validator/category.validator";
+import { listCategoriesController } from "../../controllers/category.controller";
 
 const router = express.Router();
 
@@ -63,6 +65,15 @@ router.get(
   viewOrderValidator,
   handleValidationErrors,
   viewCustomerOrderController
+);
+
+// List Categories (with search and pagination)
+router.get(
+  "/category/list",
+  authenticateToken,
+  listCategoryValidator,
+  handleValidationErrors,
+  listCategoriesController
 );
 
 export default router;

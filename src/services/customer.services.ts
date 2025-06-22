@@ -7,6 +7,7 @@ import { generateOrderNumber } from "../helper/order.helper";
 import mongoose from "mongoose";
 import OrderModel from "../models/Order.model";
 import UserModel from "../models/User.model";
+import { clearTokenCookie } from "../utils/jwt.utils";
 
 // List Products for customers (basic product schema only)
 export const listProductsService = async (
@@ -294,9 +295,7 @@ export const listCustomerOrdersService = async (
   query: any
 ): Promise<ServiceResult> => {
   try {
-    const searchFields = [
-      "orderNumber"
-    ];
+    const searchFields = ["orderNumber"];
 
     const additionalFilters: any = {
       customerId: userId,
@@ -363,6 +362,32 @@ export const viewCustomerOrderService = async (
       error: {
         code: "INTERNAL_ERROR",
         message: "Internal server error occurred while fetching order details",
+        statusCode: 500,
+      },
+    };
+  }
+};
+
+export const logoutService = async (
+  userId: string,
+  token: string,
+  res: any
+): Promise<ServiceResult> => {
+  try {
+    // ✅ Correct usage: pass `res` only
+    clearTokenCookie(res);
+
+    return {
+      success: true,
+      data: "User logged out successfully",
+    };
+  } catch (error: any) {
+    console.error("Error in logoutService:", error);
+    return {
+      success: false,
+      error: {
+        code: "LOGOUT_ERROR",
+        message: "Failed to logout user",
         statusCode: 500,
       },
     };
