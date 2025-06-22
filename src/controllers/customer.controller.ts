@@ -1,24 +1,24 @@
 import { Request, Response } from "express";
 import { ApiResponse } from "../types/api.types";
 import {
-  listOrdersService,
-  viewOrderService,
-  updateOrderStatusService,
-  deleteOrderService,
-} from "../services/order.services";
+  listProductsService,
+  viewProductService,
+  fetchAddressesService,
+  addOrderService,
+} from "../services/customer.services";
 
-// List Orders
-export const listOrdersController = async (
+// List Products
+export const listProductsController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const result = await listOrdersService(req.query);
+    const result = await listProductsService(req.query);
 
     if (!result.success) {
       const response: ApiResponse = {
         success: false,
-        message: result.error?.message || "Failed to fetch orders",
+        message: result.error?.message || "Failed to fetch products",
         timestamp: new Date().toISOString(),
       };
 
@@ -28,7 +28,7 @@ export const listOrdersController = async (
 
     const response: ApiResponse = {
       success: true,
-      message: "Orders fetched successfully",
+      message: "Products fetched successfully",
       data: result.data,
       timestamp: new Date().toISOString(),
     };
@@ -46,19 +46,19 @@ export const listOrdersController = async (
   }
 };
 
-// View Order
-export const viewOrderController = async (
+// View Product
+export const viewProductController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const result = await viewOrderService(id);
+    const result = await viewProductService(id);
 
     if (!result.success) {
       const response: ApiResponse = {
         success: false,
-        message: result.error?.message || "Failed to fetch order details",
+        message: result.error?.message || "Failed to fetch product details",
         timestamp: new Date().toISOString(),
       };
 
@@ -68,7 +68,7 @@ export const viewOrderController = async (
 
     const response: ApiResponse = {
       success: true,
-      message: "Order details fetched successfully",
+      message: "Product details fetched successfully",
       data: result.data,
       timestamp: new Date().toISOString(),
     };
@@ -86,19 +86,31 @@ export const viewOrderController = async (
   }
 };
 
-// Update Order Status
-export const updateOrderStatusController = async (
-  req: Request,
+// Fetch Addresses
+export const fetchAddressesController = async (
+  req: any,
   res: Response
 ): Promise<void> => {
   try {
-    const { id } = req.params;
-    const result = await updateOrderStatusService(id, req.body);
+    const userId = req.user?.id;
+
+    if (!userId) {
+      const response: ApiResponse = {
+        success: false,
+        message: "User authentication required",
+        timestamp: new Date().toISOString(),
+      };
+
+      res.status(401).json(response);
+      return;
+    }
+
+    const result = await fetchAddressesService(userId);
 
     if (!result.success) {
       const response: ApiResponse = {
         success: false,
-        message: result.error?.message || "Failed to update order status",
+        message: result.error?.message || "Failed to fetch addresses",
         timestamp: new Date().toISOString(),
       };
 
@@ -108,7 +120,7 @@ export const updateOrderStatusController = async (
 
     const response: ApiResponse = {
       success: true,
-      message: "Order status updated successfully",
+      message: "Addresses fetched successfully",
       data: result.data,
       timestamp: new Date().toISOString(),
     };
@@ -126,19 +138,18 @@ export const updateOrderStatusController = async (
   }
 };
 
-// Delete Order
-export const deleteOrderController = async (
+// place Order
+export const addOrderController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const { id } = req.params;
-    const result = await deleteOrderService(id);
+    const result = await addOrderService(req.body);
 
     if (!result.success) {
       const response: ApiResponse = {
         success: false,
-        message: result.error?.message || "Failed to delete order",
+        message: result.error?.message || "Failed to create order",
         timestamp: new Date().toISOString(),
       };
 
@@ -148,12 +159,12 @@ export const deleteOrderController = async (
 
     const response: ApiResponse = {
       success: true,
-      message: "Order deleted successfully",
+      message: "Order created successfully",
       data: result.data,
       timestamp: new Date().toISOString(),
     };
 
-    res.status(200).json(response);
+    res.status(201).json(response);
   } catch (error: any) {
     const response: ApiResponse = {
       success: false,

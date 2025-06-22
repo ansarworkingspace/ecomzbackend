@@ -2,7 +2,6 @@ import express from "express";
 import {
   listOrdersController,
   viewOrderController,
-  addOrderController,
   updateOrderStatusController,
   deleteOrderController,
 } from "../../controllers/order.controller";
@@ -11,7 +10,6 @@ import {
   requireAdmin,
 } from "../../middleware/auth.middleware";
 import {
-  createOrderValidator,
   deleteOrderValidator,
   listOrderValidator,
   updateOrderStatusValidator,
@@ -39,16 +37,6 @@ router.get(
   viewOrderValidator,
   handleValidationErrors,
   viewOrderController
-);
-
-// Add Order
-router.post(
-  "/orders/add",
-  authenticateToken,
-  requireAdmin,
-  createOrderValidator,
-  handleValidationErrors,
-  addOrderController
 );
 
 // Update Order Status
