@@ -1,28 +1,30 @@
-// import express from "express";
-// import { registerUserController } from "../controllers/user.controller";
-
-// const router = express.Router();
-
-// // Registration route
-// router.post("/customerRegister", registerUserController);
-
-// export default router;
-
 import express from "express";
-import { registerUserController } from "../controllers/user.controller";
+import {
+  loginUserController,
+  registerUserController,
+} from "../controllers/user.controller";
 import {
   handleValidationErrors,
+  loginValidator,
   registerValidation,
 } from "../validator/user.validator";
 
 const router = express.Router();
 
-// Registration route with validation and rate limiting
+//REGISTER
 router.post(
   "/customerRegister",
   registerValidation,
   handleValidationErrors,
   registerUserController
+);
+
+//LOGIN
+router.post(
+  "/login",
+  loginValidator,
+  handleValidationErrors,
+  loginUserController
 );
 
 export default router;

@@ -1,6 +1,12 @@
 import bcrypt from "bcrypt";
 import User from "../models/User.model";
 import { ServiceResult } from "../types/api.types";
+import { generateToken } from "../utils/jwt.utils";
+
+interface LoginData {
+  email: string;
+  password: string;
+}
 
 export const registerUserService = async (
   userData: any
@@ -71,6 +77,88 @@ export const registerUserService = async (
       error: {
         code: "INTERNAL_ERROR",
         message: "Internal server error occurred while registering user",
+        statusCode: 500,
+      },
+    };
+  }
+};
+
+export const loginUserService = async (
+  loginData: LoginData
+): Promise<ServiceResult> => {
+  try {
+    const { email, password } = loginData;
+
+    // Check if user exists
+    const user: any = await User.findOne({
+      email: email.toLowerCase(),
+      isActive: true,
+    }).select("+password");
+
+    if (!user) {
+      return {
+        success: false,
+        error: {
+          code: "INVALID_CREDENTIALS",
+          message: "Invalid email or password",
+          statusCode: 401,
+        },
+      };
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return {
+        success: false,
+        error: {
+          code: "INVALID_CREDENTIALS",
+          message: "Invalid email or password",
+          statusCode: 401,
+        },
+      };
+    }
+
+    // Generate JWT token
+    const tokenPayload = {
+      userId: user._id.toString(),
+      email: user.email,
+      role: user.role,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
+
+    const token = generateToken(tokenPayload);
+
+    // Prepare response data (exclude sensitive information)
+    const loginResponse = {
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        image: user.image,
+        addresses: user.addresses,
+        isActive: user.isActive,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+      token,
+    };
+
+    return {
+      success: true,
+      data: loginResponse,
+    };
+  } catch (error: any) {
+    console.error("Error in loginUserService:", error);
+    return {
+      success: false,
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Internal server error occurred while logging in user",
         statusCode: 500,
       },
     };

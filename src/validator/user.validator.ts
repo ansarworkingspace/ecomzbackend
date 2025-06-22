@@ -40,6 +40,20 @@ export const registerValidation = [
     .withMessage("Role must be either customer or admin"),
 ];
 
+export const loginValidator = [
+  body("email")
+    .isEmail()
+    .withMessage("Please provide a valid email address")
+    .normalizeEmail()
+    .toLowerCase(),
+
+  body("password")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long")
+    .notEmpty()
+    .withMessage("Password is required"),
+];
+
 export const handleValidationErrors = (
   req: Request,
   res: Response,
