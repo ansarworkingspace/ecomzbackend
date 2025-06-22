@@ -5,6 +5,8 @@ import {
   viewProductService,
   fetchAddressesService,
   addOrderService,
+  viewCustomerOrderService,
+  listCustomerOrdersService,
 } from "../services/customer.services";
 
 // List Products
@@ -92,7 +94,7 @@ export const fetchAddressesController = async (
   res: Response
 ): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
 
     if (!userId) {
       const response: ApiResponse = {
@@ -165,6 +167,111 @@ export const addOrderController = async (
     };
 
     res.status(201).json(response);
+  } catch (error: any) {
+    const response: ApiResponse = {
+      success: false,
+      message: "An unexpected error occurred",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+      timestamp: new Date().toISOString(),
+    };
+
+    res.status(500).json(response);
+  }
+};
+
+// List Customer Orders
+export const listCustomerOrdersController = async (
+  req: any,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      const response: ApiResponse = {
+        success: false,
+        message: "User authentication required",
+        timestamp: new Date().toISOString(),
+      };
+
+      res.status(401).json(response);
+      return;
+    }
+
+    const result = await listCustomerOrdersService(userId, req.query);
+
+    if (!result.success) {
+      const response: ApiResponse = {
+        success: false,
+        message: result.error?.message || "Failed to fetch orders",
+        timestamp: new Date().toISOString(),
+      };
+
+      res.status(result.error?.statusCode || 400).json(response);
+      return;
+    }
+
+    const response: ApiResponse = {
+      success: true,
+      message: "Orders fetched successfully",
+      data: result.data,
+      timestamp: new Date().toISOString(),
+    };
+
+    res.status(200).json(response);
+  } catch (error: any) {
+    const response: ApiResponse = {
+      success: false,
+      message: "An unexpected error occurred",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+      timestamp: new Date().toISOString(),
+    };
+
+    res.status(500).json(response);
+  }
+};
+
+// View Customer Order
+export const viewCustomerOrderController = async (
+  req: any,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.user?.userId;
+    const { id } = req.params;
+
+    if (!userId) {
+      const response: ApiResponse = {
+        success: false,
+        message: "User authentication required",
+        timestamp: new Date().toISOString(),
+      };
+
+      res.status(401).json(response);
+      return;
+    }
+
+    const result = await viewCustomerOrderService(userId, id);
+
+    if (!result.success) {
+      const response: ApiResponse = {
+        success: false,
+        message: result.error?.message || "Failed to fetch order details",
+        timestamp: new Date().toISOString(),
+      };
+
+      res.status(result.error?.statusCode || 400).json(response);
+      return;
+    }
+
+    const response: ApiResponse = {
+      success: true,
+      message: "Order details fetched successfully",
+      data: result.data,
+      timestamp: new Date().toISOString(),
+    };
+
+    res.status(200).json(response);
   } catch (error: any) {
     const response: ApiResponse = {
       success: false,

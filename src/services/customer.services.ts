@@ -287,3 +287,84 @@ export const addOrderService = async (
     };
   }
 };
+
+// List customer's orders
+export const listCustomerOrdersService = async (
+  userId: string,
+  query: any
+): Promise<ServiceResult> => {
+  try {
+    const searchFields = [
+      "orderNumber"
+    ];
+
+    const additionalFilters: any = {
+      customerId: userId,
+    };
+
+    // Build additional filters
+    const result = await getPaginatedResults(
+      OrderModel,
+      query,
+      searchFields,
+      additionalFilters
+    );
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (error: any) {
+    console.error("Error in listCustomerOrdersService:", error);
+    return {
+      success: false,
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Internal server error occurred while fetching orders",
+        statusCode: 500,
+      },
+    };
+  }
+};
+
+// View specific customer order
+export const viewCustomerOrderService = async (
+  userId: string,
+  orderId: string
+): Promise<ServiceResult> => {
+  try {
+    const order = await OrderModel.findOne({
+      _id: orderId,
+      customerId: userId, // Ensure order belongs to this customer
+    })
+      .populate("items.productId", "name category mainImage")
+      .populate("items.variantId", "images selectedOptions")
+      .lean();
+
+    if (!order) {
+      return {
+        success: false,
+        error: {
+          code: "ORDER_NOT_FOUND",
+          message:
+            "Order not found or you don't have permission to view this order",
+          statusCode: 404,
+        },
+      };
+    }
+
+    return {
+      success: true,
+      data: order,
+    };
+  } catch (error: any) {
+    console.error("Error in viewCustomerOrderService:", error);
+    return {
+      success: false,
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Internal server error occurred while fetching order details",
+        statusCode: 500,
+      },
+    };
+  }
+};

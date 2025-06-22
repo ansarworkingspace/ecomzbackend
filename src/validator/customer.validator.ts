@@ -231,3 +231,43 @@ export const createOrderValidator = [
     .isISO8601()
     .withMessage("Expected delivery date must be a valid date"),
 ];
+
+export const listOrdersValidator = [
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer"),
+
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage("Limit must be between 1 and 100"),
+
+  query("status")
+    .optional()
+    .isIn(["placed", "confirmed", "shipped", "delivered", "cancelled"])
+    .withMessage(
+      "Status must be 'placed', 'confirmed', 'shipped', 'delivered', or 'cancelled'"
+    ),
+
+  query("paymentStatus")
+    .optional()
+    .isIn(["pending", "paid", "failed"])
+    .withMessage("Payment status must be 'pending', 'paid', or 'failed'"),
+
+  query("startDate")
+    .optional()
+    .isISO8601()
+    .withMessage("Start date must be a valid date"),
+
+  query("endDate")
+    .optional()
+    .isISO8601()
+    .withMessage("End date must be a valid date"),
+];
+
+export const viewOrderValidator = [
+  param("id")
+    .isMongoId()
+    .withMessage("Order ID must be a valid MongoDB ObjectId"),
+];

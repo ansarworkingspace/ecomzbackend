@@ -1,7 +1,5 @@
 import { getPaginatedResults } from "../helper/pagination.helper";
 import Order from "../models/Order.model";
-import Product from "../models/Product.model";
-import UserModel from "../models/User.model";
 import Variant from "../models/Variant.model";
 import { ServiceResult } from "../types/api.types";
 import mongoose from "mongoose";

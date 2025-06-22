@@ -4,6 +4,7 @@ import connectDB from "./config/db";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes";
 import dashboardRoutes from "./routes/dashboard-routes/dashboard.routers";
+import customerRoutes from "./routes/customer-routes/customer.routes";
 
 dotenv.config();
 const app = express();
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 
 //ROUTES
 app.use("/api/users", userRoutes);
+app.use("/api/customers", customerRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
 // Error handling middleware
