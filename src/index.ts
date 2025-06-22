@@ -3,6 +3,7 @@ import cors from "cors";
 import connectDB from "./config/db";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes";
+import dashboardRoutes from "./routes/dashboard-routes/category.routes";
 
 dotenv.config();
 const app = express();
@@ -27,10 +28,9 @@ app.get("/", (req, res) => {
   res.json({ message: "Server is running successfully!" });
 });
 
-
-
 //ROUTES
 app.use("/api/users", userRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // Error handling middleware
 app.use(
