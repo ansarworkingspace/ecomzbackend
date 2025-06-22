@@ -6,6 +6,7 @@ import {
 } from "../services/user.services";
 import { ApiResponse } from "../types/api.types";
 import { setTokenCookie } from "../utils/jwt.utils";
+import { imageUploadService } from "../helper/image.upload.helper";
 
 export const registerUserController = async (
   req: Request,
@@ -114,6 +115,96 @@ export const logoutController = async (req: any, res: any) => {
       error: {
         code: "INTERNAL_ERROR",
         message: "Internal server error occurred during logout",
+        statusCode: 500,
+      },
+    });
+  }
+};
+
+export const imageUploadController = async (req: Request, res: any) => {
+  try {
+    // Check if files are present
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: "NO_FILES",
+          message: "No files uploaded",
+          statusCode: 400,
+        },
+      });
+    }
+
+    // Handle different file key names (files, images, etc.)
+    let files: any[] = [];
+
+    // Check for 'files' key (Postman binary data)
+    if (req.files.files) {
+      files = Array.isArray(req.files.files)
+        ? req.files.files
+        : [req.files.files];
+    }
+    // Check for 'images' key
+    else if (req.files.images) {
+      files = Array.isArray(req.files.images)
+        ? req.files.images
+        : [req.files.images];
+    }
+    // Get all files regardless of key name
+    else {
+      files = Object.values(req.files).flat();
+    }
+
+    // Filter out undefined files
+    files = files.filter((file) => file && file.data);
+
+    if (files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: "NO_VALID_FILES",
+          message: "No valid files found",
+          statusCode: 400,
+        },
+      });
+    }
+
+    // Check file count limit
+    if (files.length > 4) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: "TOO_MANY_FILES",
+          message: "Maximum 4 images allowed per upload",
+          statusCode: 400,
+        },
+      });
+    }
+
+    const result: any = await imageUploadService(files);
+
+    if (result.success) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          urls: result.data.urls,
+          count: result.data.urls.length,
+        },
+        message: "Images uploaded successfully",
+      });
+    } else {
+      return res.status(result.error.statusCode).json({
+        success: false,
+        error: result.error,
+      });
+    }
+  } catch (error) {
+    console.error("Error in imageUploadController:", error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Internal server error occurred during image upload",
         statusCode: 500,
       },
     });

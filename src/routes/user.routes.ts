@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  imageUploadController,
   loginUserController,
   logoutController,
   registerUserController,
@@ -30,5 +31,7 @@ router.post(
 );
 
 router.post("/logout", authenticateToken, logoutController);
+
+router.post("/images", authenticateToken, imageUploadController);
 
 export default router;

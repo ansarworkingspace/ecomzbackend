@@ -6,6 +6,8 @@ import userRoutes from "./routes/user.routes";
 import dashboardRoutes from "./routes/dashboard-routes/dashboard.routers";
 import customerRoutes from "./routes/customer-routes/customer.routes";
 import cookieParser from "cookie-parser";
+import { fileUploadMiddleware } from "./middleware/files.upload.middleware";
+import { v2 as cloudinary } from "cloudinary";
 
 dotenv.config();
 const app = express();
@@ -22,6 +24,14 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(fileUploadMiddleware);
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Connect to MongoDB
 connectDB();
