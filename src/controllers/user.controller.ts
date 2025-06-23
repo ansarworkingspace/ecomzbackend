@@ -25,6 +25,7 @@ export const registerUserController = async (
       return;
     }
 
+    setTokenCookie(res, result.data.token);
     const response: ApiResponse = {
       success: true,
       message: "User registered successfully",

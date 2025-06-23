@@ -28,21 +28,20 @@ export const verifyToken = (token: string): JwtPayload | null => {
   }
 };
 
-export const setTokenCookie = (res: Response, token: string): void => {
-  const cookieOptions = {
-    httpOnly: true, // Prevents XSS attacks
-    secure: process.env.NODE_ENV === "production", // HTTPS only in production
-    sameSite: "strict" as const, // CSRF protection
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
-    path: "/",
-  };
 
-  res.cookie("authToken", token, cookieOptions);
+export const setTokenCookie = (res: Response, token: string): void => {
+  res.cookie("authToken", token, {
+    // httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: "/",
+  });
 };
 
 export const clearTokenCookie = (res: Response): void => {
   res.clearCookie("authToken", {
-    httpOnly: true,
+    // httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     path: "/",

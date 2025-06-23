@@ -48,7 +48,18 @@ export const registerUserService = async (
       isActive: true,
     });
 
-    const savedUser = await user.save();
+    const savedUser: any = await user.save();
+
+    // Generate JWT token
+    const tokenPayload = {
+      userId: savedUser._id.toString(),
+      email: user.email,
+      role: user.role,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
+
+    const token = generateToken(tokenPayload);
 
     // Remove sensitive data
     const userResponse = {
@@ -63,6 +74,7 @@ export const registerUserService = async (
       isActive: savedUser.isActive,
       createdAt: savedUser.createdAt,
       updatedAt: savedUser.updatedAt,
+      token: token,
     };
 
     return {
