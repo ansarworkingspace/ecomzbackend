@@ -30,7 +30,7 @@ export const verifyToken = (token: string): JwtPayload | null => {
 
 export const setTokenCookie = (res: Response, token: string): void => {
   res.cookie("authToken", token, {
-    httpOnly: false,
+    httpOnly: true,
     secure: true,
     sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -40,7 +40,7 @@ export const setTokenCookie = (res: Response, token: string): void => {
 
 export const clearTokenCookie = (res: Response): void => {
   res.clearCookie("authToken", {
-    httpOnly: false,
+    httpOnly: true,
     secure: true,
     sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,

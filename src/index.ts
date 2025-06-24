@@ -18,7 +18,6 @@ app.use(
     origin: ["http://localhost:3000", "https://ecomzfrontend.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
