@@ -59,12 +59,6 @@ export const viewProductValidator = [
 ];
 
 export const createOrderValidator = [
-  body("customerId")
-    .notEmpty()
-    .withMessage("Customer ID is required")
-    .isMongoId()
-    .withMessage("Customer ID must be a valid MongoDB ObjectId"),
-
   body("items")
     .isArray({ min: 1 })
     .withMessage("At least one item is required"),

@@ -135,7 +135,8 @@ export const fetchAddressesService = async (
 
 // place Order
 export const addOrderService = async (
-  orderData: any
+  orderData: any,
+  userId: any
 ): Promise<ServiceResult> => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -156,10 +157,12 @@ export const addOrderService = async (
       expectedDeliveryDate,
     } = orderData;
 
+    const actualCustomerId = customerId ?? userId;
+
     // Validate customer exists
     const customerExists = await mongoose
       .model("User")
-      .findById(customerId)
+      .findById(actualCustomerId)
       .session(session);
     if (!customerExists) {
       await session.abortTransaction();
@@ -241,7 +244,7 @@ export const addOrderService = async (
     // Create order
     const order = new OrderModel({
       orderNumber,
-      customerId,
+      customerId: actualCustomerId,
       items,
       subtotal,
       shippingCost,
@@ -262,7 +265,7 @@ export const addOrderService = async (
 
     if (shippingAddress)
       await UserModel.findByIdAndUpdate(
-        customerId,
+        actualCustomerId,
         { addresses: [shippingAddress] },
         { session }
       );
@@ -367,5 +370,3 @@ export const viewCustomerOrderService = async (
     };
   }
 };
-
-

@@ -142,11 +142,12 @@ export const fetchAddressesController = async (
 
 // place Order
 export const addOrderController = async (
-  req: Request,
+  req: any,
   res: Response
 ): Promise<void> => {
   try {
-    const result = await addOrderService(req.body);
+    let userId = req.user?.userId;
+    const result = await addOrderService(req.body,userId);
 
     if (!result.success) {
       const response: ApiResponse = {

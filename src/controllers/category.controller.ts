@@ -13,7 +13,6 @@ export const listCategoriesController = async (
   res: Response
 ): Promise<void> => {
   try {
-    console.log("req.query", req.query);
     const result = await listCategoriesService(req.query);
 
     if (!result.success) {
