@@ -35,7 +35,6 @@ export const setTokenCookie = (res: Response, token: string): void => {
     sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,
     path: "/",
-    domain: "https://ecomzfrontend.vercel.app",
   });
 };
 
@@ -44,8 +43,6 @@ export const clearTokenCookie = (res: Response): void => {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
     path: "/",
-    domain: "https://ecomzfrontend.vercel.app",
   });
 };
