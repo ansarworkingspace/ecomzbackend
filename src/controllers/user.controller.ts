@@ -25,7 +25,7 @@ export const registerUserController = async (
       return;
     }
 
-    // setTokenCookie(res, result.data.token);
+    setTokenCookie(res, result.data.token);
     const response: ApiResponse = {
       success: true,
       message: "User registered successfully",
@@ -64,7 +64,7 @@ export const loginUserController = async (
     }
 
     // Set JWT token in cookie
-    // setTokenCookie(res, result.data.token);
+    setTokenCookie(res, result.data.token);
 
     const response: ApiResponse = {
       success: true,
