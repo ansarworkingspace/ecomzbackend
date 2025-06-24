@@ -29,41 +29,21 @@ export const verifyToken = (token: string): JwtPayload | null => {
 };
 
 export const setTokenCookie = (res: Response, token: string): void => {
-  // res.cookie("authToken", token, {
-  //   // httpOnly: true,
-  //   secure: process.env.NODE_ENV === "production",
-  //   sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-  //   maxAge: 7 * 24 * 60 * 60 * 1000,
-  //   path: "/",
-  // });
-
-  const isProduction = process.env.NODE_ENV === "production";
-
   res.cookie("authToken", token, {
     httpOnly: false,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: true,
+    sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,
     path: "/",
   });
 };
 
-// export const clearTokenCookie = (res: Response): void => {
-//   res.clearCookie("authToken", {
-//     // httpOnly: true,
-//     secure: process.env.NODE_ENV === "production",
-//     sameSite: "strict",
-//     path: "/",
-//   });
-// };
-
 export const clearTokenCookie = (res: Response): void => {
-  const isProduction = process.env.NODE_ENV === "production";
-
   res.clearCookie("authToken", {
     httpOnly: false,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: true,
+    sameSite: "none",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
     path: "/",
   });
 };
